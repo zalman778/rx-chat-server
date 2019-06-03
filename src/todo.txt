@@ -1,0 +1,26 @@
+1) config for mongo capped collection:
+db.runCommand( { convertToCapped: 'rxMessage', size: 8192 } )
+db.runCommand( { convertToCapped: 'rxEvent', size: 8192 } )
+db.events.stats()
+
+
+2) removing object from recycler view:
+https://stackoverflow.com/questions/31367599/how-to-update-recyclerview-adapter-data
+
+3) sesionObject lifecycle, make autodeleteion on time?
+
+
+
+4) mongo repl set start up:
+cd /var/lib
+
+
+
+//primary
+mongod --config /etc/mongod.conf --port 27017 --dbpath /var/lib/mongodb --replSet "rs0" &
+
+//secondary
+mongod --config /etc/mongod1.conf --port 27018 --dbpath /var/lib/mongodb1 --replSet "rs0" &
+
+
+5.             <!--android:visibility="@={conversationViewModel.lvEditMessageVisibility}"-->

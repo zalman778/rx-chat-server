@@ -1,0 +1,27 @@
+# Created by .ignore support plugin (hsz.mobi)
+Будет удалено .idea/
+Будет удалено rx-chat-server.iml
+Будет удалено target/
+
+/src/main/resources/config/external.properties
+/src/main/resources/config/server-keystore.p12
+/src/main/resources/config/server.key.pem
+/src/main/resources/config/server.crt.pem
+Будет удалено .idea/RSocket-chat-server.iml
+Будет удалено .idea/compiler.xml
+Будет удалено .idea/dataSources.local.xml
+Будет удалено .idea/dataSources.xml
+Будет удалено .idea/dataSources/
+Будет удалено .idea/encodings.xml
+Будет удалено .idea/libraries/
+Будет удалено .idea/misc.xml
+Будет удалено .idea/modules.xml
+Будет удалено .idea/vcs.xml
+Будет удалено .idea/workspace.xml
+Будет удалено logs/
+Будет удалено target/classes/com/
+Будет удалено target/classes/config/application.properties
+Будет удалено target/classes/config/application.yml
+Будет удалено target/classes/logback.xml
+Будет удалено target/generated-sources/
+Будет удалено target/maven-status/

@@ -7,9 +7,9 @@ import com.hwx.rx_chat.common.entity.rx.RxMessage;
 import com.hwx.rx_chat.common.object.rx.RxObject;
 import com.hwx.rx_chat.common.object.rx.types.EventType;
 import com.hwx.rx_chat.common.object.rx.types.ObjectType;
-import com.hwx.rx_chat.common.object.st.Dialog;
-import com.hwx.rx_chat.common.object.st.Message;
-import com.hwx.rx_chat.common.object.st.UserEntity;
+import com.hwx.rx_chat.common.entity.st.Dialog;
+import com.hwx.rx_chat.common.entity.st.Message;
+import com.hwx.rx_chat.common.entity.st.UserEntity;
 import com.hwx.rx_chat.common.util.DateUtil;
 import com.hwx.rx_chat_server.repository.db_static.DialogStaticRepository;
 import com.hwx.rx_chat_server.repository.db_static.MessageStaticRepository;
@@ -109,7 +109,7 @@ public class RxObjectHandler {
                             for (UserEntity userEntity : message.getMsgDialog().getMembers()) {
 
                                 //expiring in 1 hr
-                                RxEvent rxEvent = new RxEvent(userEntity.getName()
+                                RxEvent rxEvent = new RxEvent(userEntity.getUsername()
                                         , EventType.MESSAGE_DELETED
                                         , messageId
                                         ,null
@@ -144,7 +144,7 @@ public class RxObjectHandler {
                         for (UserEntity userEntity : message.getMsgDialog().getMembers()) {
 
                             //expiring in 1 hr
-                            RxEvent rxEvent = new RxEvent(userEntity.getName()
+                            RxEvent rxEvent = new RxEvent(userEntity.getUsername()
                                     , EventType.MESSAGE_EDIT
                                     , messageId
                                     , message.getValue()

@@ -1,6 +1,6 @@
 package com.hwx.rx_chat_server.repository.db_static.impl;
 
-import com.hwx.rx_chat.common.object.st.Dialog;
+import com.hwx.rx_chat.common.entity.st.Dialog;
 import com.hwx.rx_chat.common.response.DialogResponse;
 import com.hwx.rx_chat_server.repository.db_static.DialogStaticRepository;
 import org.hibernate.Session;
@@ -31,7 +31,7 @@ public class DialogStaticRepositoryImpl implements DialogStaticRepository {
                 "      ,(select max(ms.date_sent)\n" +
                 "          from message ms\n" +
                 "        where ms.id_dialog = d.id) as \"lastDate\"\n" +
-                "      ,(select u2.name\n" +
+                "      ,(select u2.username\n" +
                 "         from message ms2\n" +
                 "             ,user u2\n" +
                 "        where ms2.id_dialog = d.id\n" +

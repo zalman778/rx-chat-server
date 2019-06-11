@@ -2,7 +2,7 @@ package com.hwx.rx_chat_server.service.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hwx.rx_chat.common.response.LoginResponse;
-import com.hwx.rx_chat.common.object.st.UserEntity;
+import com.hwx.rx_chat.common.entity.st.UserEntity;
 import com.hwx.rx_chat_server.repository.db_static.UserStaticRepository;
 
 import io.jsonwebtoken.Jwts;
@@ -55,10 +55,9 @@ public class TokenAuthenticationService {
         try {
             OutputStream outputStream = res.getOutputStream();
             UserEntity userEntity = userStaticRepository.findByUsername(username);
-            LoginResponse loginResponse = new LoginResponse("ok", "ok");
-            loginResponse.setUserId(userEntity.getId());
-            loginResponse.setEmail(userEntity.getMail());
-            loginResponse.setName(userEntity.getName());
+            LoginResponse loginResponse = LoginResponse.createFromUserEntity(userEntity);
+            loginResponse.setStatus("ok");
+            loginResponse.setText("ok");
             loginResponse.setToken(TOKEN_PREFIX + " " + JWT);
             String jsonBody = customObjectMapper.writeValueAsString(loginResponse);
             outputStream.write(jsonBody.getBytes());

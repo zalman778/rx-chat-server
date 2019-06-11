@@ -25,3 +25,5 @@
 Будет удалено target/classes/logback.xml
 Будет удалено target/generated-sources/
 Будет удалено target/maven-status/
+!/.idea/
+/.idea/

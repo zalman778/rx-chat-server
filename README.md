@@ -21,6 +21,11 @@
 * spring.data.mongodb.host=
 * spring.data.mongodb.port=
 * spring.data.mongodb.database=
+* server.ssl.key-store=classpath:config/
+* server.ssl.key-store-password=
+* server.ssl.key-alias=
+
+Добавить keystore.
 
 У монго должна быть настроена реплика.
 

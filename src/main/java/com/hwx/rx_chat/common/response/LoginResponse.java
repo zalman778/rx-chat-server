@@ -3,6 +3,7 @@ package com.hwx.rx_chat.common.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.annotations.SerializedName;
+import com.hwx.rx_chat.common.entity.st.UserEntity;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -15,8 +16,8 @@ public class LoginResponse implements Serializable {
     @SerializedName("text")
     private String text;
 
-    @SerializedName("name")
-    private String name;
+    @SerializedName("username")
+    private String username;
 
     @SerializedName("email")
     private String email;
@@ -28,15 +29,34 @@ public class LoginResponse implements Serializable {
     @JsonProperty("user_id")
     private String userId;
 
+    @SerializedName("avatar_url")
+    @JsonProperty("avatar_url")
+    private String avatarUrl;
+
+    @SerializedName("first_name")
+    @JsonProperty("first_name")
+    private String firstName;
+
+    @SerializedName("last_name")
+    @JsonProperty("last_name")
+    private String lastName;
+
+    @SerializedName("bio")
+    @JsonProperty("bio")
+    private String bio;
+
+    public LoginResponse() {
+    }
+
     public LoginResponse(String status, String text) {
         this.status = status;
         this.text = text;
     }
 
-    public LoginResponse(String status, String text, String name, String email, String userId) {
+    public LoginResponse(String status, String text, String username, String email, String userId) {
         this.status = status;
         this.text = text;
-        this.name = name;
+        this.username = username;
         this.email = email;
         this.userId = userId;
     }
@@ -57,12 +77,12 @@ public class LoginResponse implements Serializable {
         this.text = text;
     }
 
-    public String getName() {
-        return name;
+    public String getUsername() {
+        return username;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getEmail() {
@@ -89,6 +109,38 @@ public class LoginResponse implements Serializable {
         this.userId = userId;
     }
 
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getBio() {
+        return bio;
+    }
+
+    public void setBio(String bio) {
+        this.bio = bio;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -96,15 +148,19 @@ public class LoginResponse implements Serializable {
         LoginResponse that = (LoginResponse) o;
         return Objects.equals(status, that.status) &&
                 Objects.equals(text, that.text) &&
-                Objects.equals(name, that.name) &&
+                Objects.equals(username, that.username) &&
                 Objects.equals(email, that.email) &&
                 Objects.equals(token, that.token) &&
-                Objects.equals(userId, that.userId);
+                Objects.equals(userId, that.userId) &&
+                Objects.equals(avatarUrl, that.avatarUrl) &&
+                Objects.equals(firstName, that.firstName) &&
+                Objects.equals(lastName, that.lastName) &&
+                Objects.equals(bio, that.bio);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(status, text, name, email, token, userId);
+        return Objects.hash(status, text, username, email, token, userId, avatarUrl, firstName, lastName, bio);
     }
 
     @Override
@@ -112,10 +168,26 @@ public class LoginResponse implements Serializable {
         return "LoginResponse{" +
                 "status='" + status + '\'' +
                 ", text='" + text + '\'' +
-                ", name='" + name + '\'' +
+                ", username='" + username + '\'' +
                 ", email='" + email + '\'' +
                 ", token='" + token + '\'' +
                 ", userId='" + userId + '\'' +
+                ", avatarUrl='" + avatarUrl + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", bio='" + bio + '\'' +
                 '}';
+    }
+
+    //server side only:
+    public static LoginResponse createFromUserEntity(UserEntity userEntity) {
+        LoginResponse loginResponse = new LoginResponse();
+        loginResponse.setUsername(userEntity.getUsername());
+        loginResponse.setEmail(userEntity.getMail());
+        loginResponse.setFirstName(userEntity.getFirstName());
+        loginResponse.setLastName(userEntity.getLastName());
+        loginResponse.setAvatarUrl(userEntity.getAvatarUrl());
+        loginResponse.setBio(userEntity.getBio());
+        return loginResponse;
     }
 }

@@ -1,6 +1,6 @@
 package com.hwx.rx_chat_server.service.jwt;
 
-import com.hwx.rx_chat.common.object.st.UserEntity;
+import com.hwx.rx_chat.common.entity.st.UserEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;

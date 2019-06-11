@@ -1,7 +1,6 @@
 package com.hwx.rx_chat_server.repository.db_static;
 
-import com.hwx.rx_chat.common.object.st.Message;
-import com.hwx.rx_chat.common.object.st.UserEntity;
+import com.hwx.rx_chat.common.entity.st.UserEntity;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 

@@ -2,7 +2,7 @@ package com.hwx.rx_chat.common.entity.rx;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.annotations.SerializedName;
-import com.hwx.rx_chat.common.object.st.Message;
+import com.hwx.rx_chat.common.entity.st.Message;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serializable;

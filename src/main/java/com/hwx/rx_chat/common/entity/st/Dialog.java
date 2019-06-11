@@ -1,4 +1,4 @@
-package com.hwx.rx_chat.common.object.st;
+package com.hwx.rx_chat.common.entity.st;
 
 
 import org.springframework.data.mongodb.core.mapping.Document;

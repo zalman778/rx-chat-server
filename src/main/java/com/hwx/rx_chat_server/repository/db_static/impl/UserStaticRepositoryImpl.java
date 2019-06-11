@@ -1,6 +1,6 @@
 package com.hwx.rx_chat_server.repository.db_static.impl;
 
-import com.hwx.rx_chat.common.object.st.UserEntity;
+import com.hwx.rx_chat.common.entity.st.UserEntity;
 import com.hwx.rx_chat_server.repository.db_static.UserStaticRepository;
 import com.hwx.rx_chat_server.service.jwt.SpringUserAssembler;
 import org.springframework.beans.factory.annotation.Autowired;

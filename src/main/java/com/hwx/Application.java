@@ -8,8 +8,7 @@ import org.springframework.context.annotation.PropertySources;
 
 @SpringBootApplication
 @PropertySource(value={
-        "classpath:config/application.yml"
-        ,"classpath:config/external.properties"
+         "classpath:config/external.properties"
         ,"classpath:config/application.properties"
 }, ignoreResourceNotFound = true)
 public class Application {

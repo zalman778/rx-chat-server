@@ -1,4 +1,4 @@
-package com.hwx.rx_chat.common.object.st;
+package com.hwx.rx_chat.common.entity.st;
 
 import com.google.gson.annotations.SerializedName;
 import com.hwx.rx_chat.common.entity.rx.RxMessage;

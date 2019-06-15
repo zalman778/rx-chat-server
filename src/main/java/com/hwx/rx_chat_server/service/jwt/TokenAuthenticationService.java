@@ -3,7 +3,7 @@ package com.hwx.rx_chat_server.service.jwt;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hwx.rx_chat.common.response.LoginResponse;
 import com.hwx.rx_chat.common.entity.st.UserEntity;
-import com.hwx.rx_chat_server.repository.db_static.UserStaticRepository;
+import com.hwx.rx_chat_server.repository.custom.UserEntityCustomRepository;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -31,7 +31,7 @@ public class TokenAuthenticationService {
     private static final Logger logger = LoggerFactory.getLogger(TokenAuthenticationService.class);
 
     @Autowired
-    private UserStaticRepository userStaticRepository;
+    private UserEntityCustomRepository userEntityCustomRepository;
 
     @Autowired
     ObjectMapper customObjectMapper;
@@ -54,7 +54,7 @@ public class TokenAuthenticationService {
         //adding LoginResponse to body
         try {
             OutputStream outputStream = res.getOutputStream();
-            UserEntity userEntity = userStaticRepository.findByUsername(username);
+            UserEntity userEntity = userEntityCustomRepository.findByUsername(username);
             LoginResponse loginResponse = LoginResponse.createFromUserEntity(userEntity);
             loginResponse.setStatus("ok");
             loginResponse.setText("ok");

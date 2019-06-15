@@ -3,7 +3,6 @@ package com.hwx.rx_chat_server.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hwx.rx_chat_server.netty.RSocketObjectController;
 import com.hwx.rx_chat_server.netty.RxObjectHandler;
-import com.hwx.rx_chat_server.service.jwt.TokenAuthenticationService;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.rsocket.*;
@@ -35,9 +34,9 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 
 @Controller
-public class ChatSocketController {
+public class ChatSocketRxController {
 
-    private static final Logger logger = LoggerFactory.getLogger(ChatSocketController.class);
+    private static final Logger logger = LoggerFactory.getLogger(ChatSocketRxController.class);
 
     @Qualifier("customObjectMapper")
     @Autowired
@@ -49,7 +48,7 @@ public class ChatSocketController {
     private final Environment environment;
 
     @Autowired
-    public ChatSocketController(Environment environment) {
+    public ChatSocketRxController(Environment environment) {
         this.environment = environment;
     }
 

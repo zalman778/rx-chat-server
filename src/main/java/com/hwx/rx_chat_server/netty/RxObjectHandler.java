@@ -11,10 +11,11 @@ import com.hwx.rx_chat.common.entity.st.Dialog;
 import com.hwx.rx_chat.common.entity.st.Message;
 import com.hwx.rx_chat.common.entity.st.UserEntity;
 import com.hwx.rx_chat.common.util.DateUtil;
-import com.hwx.rx_chat_server.repository.db_static.DialogStaticRepository;
-import com.hwx.rx_chat_server.repository.db_static.MessageStaticRepository;
-import com.hwx.rx_chat_server.repository.rx.EventReactiveRepository;
-import com.hwx.rx_chat_server.repository.rx.MessageReactiveRepository;
+import com.hwx.rx_chat_server.repository.custom.DialogCustomRepository;
+import com.hwx.rx_chat_server.repository.custom.MessageCustomRepository;
+import com.hwx.rx_chat_server.repository.st.UserEntityStaticRepository;
+import com.hwx.rx_chat_server.rxrepository.EventReactiveRepository;
+import com.hwx.rx_chat_server.rxrepository.MessageReactiveRepository;
 import io.rsocket.Payload;
 import io.rsocket.util.DefaultPayload;
 import org.bson.types.ObjectId;
@@ -54,10 +55,13 @@ public class RxObjectHandler {
     EventReactiveRepository eventReactiveRepository;
 
     @Autowired
-    MessageStaticRepository messageStaticRepository;
+    MessageCustomRepository messageCustomRepository;
 
     @Autowired
-    DialogStaticRepository dialogStaticRepository;
+    DialogCustomRepository dialogCustomRepository;
+
+    @Autowired
+    UserEntityStaticRepository userEntityStaticRepository;
 
     @Autowired
     ReactiveMongoOperations reactiveTemplate;
@@ -78,22 +82,30 @@ public class RxObjectHandler {
                             RxMessage rxMessage = rxObject.getMessage();
                             if (rxMessage.getId() == null)
                                 rxMessage.setId(new ObjectId().toString());
+
+
+                            //adding image URL in rx messages:
+                            //TODO: implement caching!!!
+                            UserEntity userSended = userEntityStaticRepository.findFirstByUsername(rxMessage.getUserFromName());
+                            if (userSended != null)
+                                rxMessage.setImageUrl(userSended.getAvatarUrl());
+
                             rxMessage.setUserFromName(sessionObject.getClientUserName());
 
                             messageReactiveRepository.save(rxMessage).subscribe();
 
-                            Dialog dialog = dialogStaticRepository.loadDialogByDialogId(rxMessage.getIdDialog());
-                            messageStaticRepository.add(Message.createFromRxMessage(rxMessage, dialog));
+                            Dialog dialog = dialogCustomRepository.loadDialogByDialogId(rxMessage.getIdDialog());
+                            messageCustomRepository.add(Message.createFromRxMessage(rxMessage, dialog));
                         }
                         break;
 
                     //прилетел ивент удаления сообщения - получаем список всех участников диалога, для всех создаем инвет об удалении сообщения
                     case MESSAGE_DELETED: {
                             String messageId = (String) rxObject.getValue();
-                            Message message = messageStaticRepository.get(messageId);
+                            Message message = messageCustomRepository.get(messageId);
                             message.setDeleted(true);
                             message.setDateDeleted(new Date());
-                            messageStaticRepository.update(message);
+                            messageCustomRepository.update(message);
 
                             messageReactiveRepository.findById(messageId).subscribe(
                                     e -> {
@@ -123,11 +135,11 @@ public class RxObjectHandler {
                     case MESSAGE_EDIT:
                         RxMessage rxMessage = rxObject.getMessage();
                         String messageId = rxMessage.getId();
-                        Message message = messageStaticRepository.get(messageId);
+                        Message message = messageCustomRepository.get(messageId);
                         message.setDateEdited(new Date());
                         message.setEdited(true);
                         message.setValue(rxMessage.getValue());
-                        messageStaticRepository.update(message);
+                        messageCustomRepository.update(message);
 
                         messageReactiveRepository.findById(messageId).subscribe(
                                 e -> {

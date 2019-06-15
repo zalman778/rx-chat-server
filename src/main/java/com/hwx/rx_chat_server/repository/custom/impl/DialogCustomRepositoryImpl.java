@@ -1,13 +1,14 @@
-package com.hwx.rx_chat_server.repository.db_static.impl;
+package com.hwx.rx_chat_server.repository.custom.impl;
 
 import com.hwx.rx_chat.common.entity.st.Dialog;
 import com.hwx.rx_chat.common.response.DialogResponse;
-import com.hwx.rx_chat_server.repository.db_static.DialogStaticRepository;
+import com.hwx.rx_chat_server.repository.custom.DialogCustomRepository;
 import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import java.sql.Timestamp;
@@ -17,10 +18,11 @@ import java.util.List;
 
 @Repository
 @Transactional
-public class DialogStaticRepositoryImpl implements DialogStaticRepository {
+public class DialogCustomRepositoryImpl implements DialogCustomRepository {
 
     @PersistenceContext
     private EntityManager entityManager;
+
 
     @Override
     public List<DialogResponse> findLastDialogs(String userId) {
@@ -55,10 +57,11 @@ public class DialogStaticRepositoryImpl implements DialogStaticRepository {
                 "     select 1\n" +
                 "       from dialog_members dm\n" +
                 "           ,user u\n" +
-                "      where u.id = '0a'\n" +
+                "      where u.id = :userID\n" + //TODO!!!!!!!!!!
                 "         and dm.user_id = u.id\n" +
                 "         and dm.dialog_id = d.id\n" +
                 "           )");
+        query.setParameter("userID", userId);
         List<DialogResponse> dialogResponses = new ArrayList<>();
         List<Object[]> res = query.getResultList();
         for (Object[] objArr : res) {
@@ -81,4 +84,38 @@ public class DialogStaticRepositoryImpl implements DialogStaticRepository {
         Session session = entityManager.unwrap(Session.class);
         return session.load(Dialog.class, dialogId);
     }
+
+    @Override
+    public String findExistingDialogByUserIdAAndUserIdB(String userIdA, String userIdB) {
+        try {
+            Query query = entityManager.createNativeQuery("select d.id\n" +
+                    "  from dialog d\n" +
+                    "where exists (\n" +
+                    "        select 1\n" +
+                    "          from dialog_members dm\n" +
+                    "        where dm.user_id = :userA\n" +
+                    "          and dm.dialog_id = d.id\n" +
+                    "          )\n" +
+                    "    and exists(\n" +
+                    "        select 1\n" +
+                    "        from dialog_members dm\n" +
+                    "        where dm.user_id = :userB\n" +
+                    "          and dm.dialog_id = d.id\n" +
+                    "    )\n" +
+                    "    and not exists(\n" +
+                    "        select 1\n" +
+                    "          from dialog_members dm\n" +
+                    "       where dm.dialog_id = d.id\n" +
+                    "        and dm.user_id not in (:userA, :userB)\n" +
+                    "    )");
+            query.setParameter("userA", userIdA);
+            query.setParameter("userB", userIdB);
+            return (String) query.getSingleResult();
+        } catch (NoResultException nre) {
+            return null;
+        }
+    }
+
+
+
 }

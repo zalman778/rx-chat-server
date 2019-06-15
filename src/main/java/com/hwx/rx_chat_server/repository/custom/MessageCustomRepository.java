@@ -1,4 +1,4 @@
-package com.hwx.rx_chat_server.repository.db_static;
+package com.hwx.rx_chat_server.repository.custom;
 
 import com.hwx.rx_chat.common.entity.rx.RxMessage;
 import com.hwx.rx_chat.common.entity.st.Message;
@@ -9,8 +9,7 @@ import java.util.List;
 
 @Repository
 @Transactional
-//@Transactional("staticTransactionManager")
-public interface MessageStaticRepository {//extends CrudRepository<Message, String> {
+public interface MessageCustomRepository {
     Message add(Message message);
 
     Message get(String id);

@@ -7,6 +7,7 @@ import com.hwx.rx_chat_server.exceptions.SecurityConfigurationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.*;
 import org.springframework.core.env.Environment;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.util.ResourceUtils;
@@ -25,6 +26,7 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 
 @Configuration
+@EnableJpaRepositories("com.hwx.rx_chat_server.repository")
 public class SpringConfiguration implements WebMvcConfigurer {
 
     @Autowired

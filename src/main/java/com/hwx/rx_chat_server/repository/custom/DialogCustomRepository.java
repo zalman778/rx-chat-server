@@ -1,4 +1,4 @@
-package com.hwx.rx_chat_server.repository.db_static;
+package com.hwx.rx_chat_server.repository.custom;
 
 import com.hwx.rx_chat.common.entity.st.Dialog;
 import com.hwx.rx_chat.common.response.DialogResponse;
@@ -9,8 +9,11 @@ import java.util.List;
 
 @Repository
 @Transactional
-public interface DialogStaticRepository  {
+public interface DialogCustomRepository {
     List<DialogResponse> findLastDialogs(String userId);
 
-    public Dialog loadDialogByDialogId(String dialogId);
+    Dialog loadDialogByDialogId(String dialogId);
+
+    String findExistingDialogByUserIdAAndUserIdB(String userIdA, String userIdB);
+
 }

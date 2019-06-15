@@ -182,6 +182,7 @@ public class LoginResponse implements Serializable {
     //server side only:
     public static LoginResponse createFromUserEntity(UserEntity userEntity) {
         LoginResponse loginResponse = new LoginResponse();
+        loginResponse.setUserId(userEntity.getId());
         loginResponse.setUsername(userEntity.getUsername());
         loginResponse.setEmail(userEntity.getMail());
         loginResponse.setFirstName(userEntity.getFirstName());

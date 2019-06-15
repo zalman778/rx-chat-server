@@ -59,6 +59,10 @@ public class RxMessage implements Serializable {
     @JsonProperty("date_deleted")
     private Date dateDeleted;
 
+    @SerializedName("image_url")
+    @JsonProperty("image_url")
+    private String imageUrl;
+
     public RxMessage() {
     }
 
@@ -167,6 +171,14 @@ public class RxMessage implements Serializable {
 
     public void setDateDeleted(Date dateDeleted) {
         this.dateDeleted = dateDeleted;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     @Override

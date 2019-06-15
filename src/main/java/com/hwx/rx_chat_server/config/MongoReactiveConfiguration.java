@@ -9,7 +9,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.data.mongodb.config.AbstractReactiveMongoConfiguration;
 import org.springframework.data.mongodb.repository.config.EnableReactiveMongoRepositories;
 
-@EnableReactiveMongoRepositories(basePackages = "com.hwx.rx_chat_server.repository.rx")
+@EnableReactiveMongoRepositories(basePackages = "com.hwx.rx_chat_server.rxrepository")
 public class MongoReactiveConfiguration extends AbstractReactiveMongoConfiguration {
 
     private final Environment environment;

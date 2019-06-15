@@ -2,10 +2,7 @@ package com.hwx.rx_chat.common.entity.st;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Entity
 @Table(
@@ -51,6 +48,14 @@ public class UserEntity implements Serializable {
             joinColumns=@JoinColumn (name="dialog_id"),
             inverseJoinColumns=@JoinColumn(name="user_id"))
     private List<Dialog> dialogs = new ArrayList<>();
+
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
+    private Set<Friendship> friends = new HashSet<>();
+
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "requester")
+    private Set<Friendship> friendRequests = new HashSet<>();
+
+
 
     public String getId() {
         return id;
@@ -138,6 +143,22 @@ public class UserEntity implements Serializable {
 
     public void setBio(String bio) {
         this.bio = bio;
+    }
+
+    public Set<Friendship> getFriends() {
+        return friends;
+    }
+
+    public void setFriends(Set<Friendship> friends) {
+        this.friends = friends;
+    }
+
+    public Set<Friendship> getFriendRequests() {
+        return friendRequests;
+    }
+
+    public void setFriendRequests(Set<Friendship> friendRequests) {
+        this.friendRequests = friendRequests;
     }
 
     @Override

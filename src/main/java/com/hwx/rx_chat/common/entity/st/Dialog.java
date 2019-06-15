@@ -1,8 +1,6 @@
 package com.hwx.rx_chat.common.entity.st;
 
 
-import org.springframework.data.mongodb.core.mapping.Document;
-
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -10,7 +8,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
-@Document
 @Entity
 @Table(name="dialog")
 public class Dialog implements Serializable {
@@ -27,9 +24,9 @@ public class Dialog implements Serializable {
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable (name="dialog_members",
-            joinColumns=@JoinColumn (name="user_id"),
-            inverseJoinColumns=@JoinColumn(name="dialog_id"))
-    private List<UserEntity> members;
+            joinColumns=@JoinColumn (name="dialog_id"),
+            inverseJoinColumns=@JoinColumn(name="user_id"))
+    private List<UserEntity> members = new ArrayList<>();
 
     @OneToMany(mappedBy = "msgDialog")
     private List<Message> messages = new ArrayList<>();

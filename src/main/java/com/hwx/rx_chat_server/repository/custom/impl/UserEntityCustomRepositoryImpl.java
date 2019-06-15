@@ -1,7 +1,7 @@
-package com.hwx.rx_chat_server.repository.db_static.impl;
+package com.hwx.rx_chat_server.repository.custom.impl;
 
 import com.hwx.rx_chat.common.entity.st.UserEntity;
-import com.hwx.rx_chat_server.repository.db_static.UserStaticRepository;
+import com.hwx.rx_chat_server.repository.custom.UserEntityCustomRepository;
 import com.hwx.rx_chat_server.service.jwt.SpringUserAssembler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
@@ -23,7 +23,7 @@ import java.util.List;
 @Repository
 @Transactional
 @Primary
-public class UserStaticRepositoryImpl implements UserStaticRepository, UserDetailsService {
+public class UserEntityCustomRepositoryImpl implements UserEntityCustomRepository, UserDetailsService {
 
     @PersistenceContext
     private EntityManager entityManager;

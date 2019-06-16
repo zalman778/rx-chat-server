@@ -16,6 +16,19 @@ public class DefaultResponse {
         this.value = value;
     }
 
+    public static DefaultResponse OK() {
+        return new DefaultResponse("ok", "ok");
+    }
+
+    public static DefaultResponse OK(String message, String value) {
+        return new DefaultResponse("ok", message, value);
+    }
+
+    public static DefaultResponse ERR(String msg) {
+        return new DefaultResponse("err", msg);
+    }
+
+
     public String getCode() {
         return code;
     }

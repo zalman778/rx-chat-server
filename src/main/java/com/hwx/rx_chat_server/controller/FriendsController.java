@@ -7,10 +7,7 @@ import com.hwx.rx_chat_server.service.st.FriendshipService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,7 +17,7 @@ public class FriendsController {
     private static final Logger logger = LoggerFactory.getLogger(FriendsController.class);
 
     @Autowired
-    FriendshipService friendshipService;
+    private FriendshipService friendshipService;
 
     @Autowired
     private UserEntityStaticRepository userEntityStaticRepository;
@@ -48,7 +45,7 @@ public class FriendsController {
 
 
 
-    //прием, отказ запросов в друзья
+    //запросы в друзья
     @RequestMapping(value = "/api/friends/request/accept", method = RequestMethod.POST, produces = "application/json")
     public DefaultResponse acceptFriendRequest(@RequestParam String requestId) {
         try {
@@ -71,6 +68,17 @@ public class FriendsController {
             return new DefaultResponse("err", "err");
         }
 
+    }
+
+    @GetMapping("/api/friends/request/create/{profileId}")
+    public DefaultResponse getProfileInfo(@PathVariable String profileId) {
+        try {
+            friendshipService.createFriendRequest(profileId);
+            return DefaultResponse.OK();
+        } catch (Exception e) {
+            logger.error("err", e);
+            return DefaultResponse.ERR("err");
+        }
     }
 
 }

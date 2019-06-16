@@ -57,7 +57,7 @@ public class DialogCustomRepositoryImpl implements DialogCustomRepository {
                 "     select 1\n" +
                 "       from dialog_members dm\n" +
                 "           ,user u\n" +
-                "      where u.id = :userID\n" + //TODO!!!!!!!!!!
+                "      where u.id = :userID\n" +
                 "         and dm.user_id = u.id\n" +
                 "         and dm.dialog_id = d.id\n" +
                 "           )");

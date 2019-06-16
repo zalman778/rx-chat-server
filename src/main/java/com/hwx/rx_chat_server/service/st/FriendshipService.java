@@ -6,4 +6,5 @@ import org.springframework.stereotype.Service;
 public interface FriendshipService {
     void acceptFriendRequest(String requestId);
     void rejectFriendRequest(String requestId);
+    void createFriendRequest(String profileId);
 }

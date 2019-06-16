@@ -4,14 +4,13 @@ import com.hwx.rx_chat.common.entity.st.Dialog;
 import com.hwx.rx_chat.common.entity.st.UserEntity;
 import com.hwx.rx_chat_server.repository.custom.DialogCustomRepository;
 import com.hwx.rx_chat_server.repository.st.DialogStaticRepository;
+import com.hwx.rx_chat_server.repository.st.UserEntityStaticRepository;
 import com.hwx.rx_chat_server.service.st.DialogService;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.util.Date;
 
 @Service
@@ -24,8 +23,8 @@ public class DialogServiceImpl implements DialogService {
     @Autowired
     private DialogStaticRepository dialogStaticRepository;
 
-    @PersistenceContext
-    private EntityManager entityManager;
+    @Autowired
+    private UserEntityStaticRepository userEntityStaticRepository;
 
 
     @Override
@@ -38,10 +37,10 @@ public class DialogServiceImpl implements DialogService {
             Dialog newDialog = new Dialog();
             newDialog.setId(new ObjectId().toString());
             newDialog.setCreateDate(new Date());
-            newDialog.setName("dialog of: "+userIdA+ " and "+userIdB);
-            UserEntity userEntityA = entityManager.getReference(UserEntity.class, userIdA);
-            UserEntity userEntityB = entityManager.getReference(UserEntity.class, userIdB);
 
+            UserEntity userEntityA = userEntityStaticRepository.findById(userIdA).get();
+            UserEntity userEntityB = userEntityStaticRepository.findById(userIdB).get();
+            newDialog.setName(""+userEntityA.getUsername()+ "; "+userEntityB.getUsername());
             newDialog.getMembers().add(userEntityA);
             newDialog.getMembers().add(userEntityB);
             dialogStaticRepository.save(newDialog);

@@ -34,7 +34,6 @@ public class ChatController {
     private UserEntityStaticRepository userEntityStaticRepository;
 
 
-    //@PostMapping("/api/dialogs")
     @RequestMapping(value = "/api/dialogs", method = RequestMethod.POST, produces = "application/json")
     public List<DialogResponse> getDialogList(@RequestParam String userId) {
         return dialogCustomRepository.findLastDialogs(userId);
@@ -46,7 +45,7 @@ public class ChatController {
     }
 
     //поиск юзера по юзернейму -
-    // TODO - отфильтровать свой ник
+    // TODO - отфильтровать свой ник, отфильтровать уже существующих друзей
     @RequestMapping(value = "/api/users/search", method = RequestMethod.POST, produces = "application/json")
     public List<FriendResponse> searchUser(@RequestParam String username) {
         List<FriendResponse> tempList = userEntityStaticRepository.findAllByUsernameLike("%"+username+"%")

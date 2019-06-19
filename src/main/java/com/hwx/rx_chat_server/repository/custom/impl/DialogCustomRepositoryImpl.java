@@ -60,7 +60,8 @@ public class DialogCustomRepositoryImpl implements DialogCustomRepository {
                 "      where u.id = :userID\n" +
                 "         and dm.user_id = u.id\n" +
                 "         and dm.dialog_id = d.id\n" +
-                "           )");
+                "           )" +
+                "order by  lastDate desc");
         query.setParameter("userID", userId);
         List<DialogResponse> dialogResponses = new ArrayList<>();
         List<Object[]> res = query.getResultList();

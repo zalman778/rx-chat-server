@@ -13,6 +13,7 @@ import com.hwx.rx_chat.common.entity.st.UserEntity;
 import com.hwx.rx_chat.common.util.DateUtil;
 import com.hwx.rx_chat_server.repository.custom.DialogCustomRepository;
 import com.hwx.rx_chat_server.repository.custom.MessageCustomRepository;
+import com.hwx.rx_chat_server.repository.st.DialogStaticRepository;
 import com.hwx.rx_chat_server.repository.st.UserEntityStaticRepository;
 import com.hwx.rx_chat_server.rxrepository.EventReactiveRepository;
 import com.hwx.rx_chat_server.rxrepository.MessageReactiveRepository;
@@ -30,6 +31,8 @@ import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.match;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.newAggregation;
@@ -59,6 +62,9 @@ public class RxObjectHandler {
 
     @Autowired
     DialogCustomRepository dialogCustomRepository;
+
+    @Autowired
+    DialogStaticRepository dialogStaticRepository;
 
     @Autowired
     UserEntityStaticRepository userEntityStaticRepository;
@@ -176,6 +182,10 @@ public class RxObjectHandler {
                         sessionObject.getPrDialogId().onNext((String)rxObject.getValue());
                         logger.info("AVX", "got dialogid for client ="+ rxObject.getValue());
                         break;
+                    case ID_USER:
+                        sessionObject.getUpUserId().onNext((String)rxObject.getValue());
+                        logger.info("AVX", "got dialogid for client ="+ rxObject.getValue());
+                        break;
                     case USERNAME:
                         sessionObject.getPrUsername().onNext((String)rxObject.getValue());
                         sessionObject.setClientUserName((String)rxObject.getValue());
@@ -211,7 +221,7 @@ public class RxObjectHandler {
                             }
 
                     ),
-                   ///подписываемся на события по логину
+                   ///подписываемся на события по логину ?!
                    Flux.from(sessionObject.getPrUsername())
                         .flatMap(e-> {
                             logger.info("AVX", "got username"+e);
@@ -229,6 +239,40 @@ public class RxObjectHandler {
                         }
 
                     )
+                    /* подписываемся на все сообщения для юзера
+                     * при получении нового юзер айди - получаем из статик бд весь список диалогов, в котором он учавствует:
+                     * надо предусмотреть случаи, когда юзера удаляют из чаата или добавляют в него - получаем рхИвенты,
+                     * их надо анализировать тут же
+                     */
+
+                    ,Flux.from(sessionObject.getUpUserId())
+                        .flatMap(e->{
+                                    logger.info("AVX", "requesting for userId="+e);
+                                    List<String> dialogListIds = dialogStaticRepository
+                                            .findAllDialogByMembers_Id(e)
+                                            .stream().map(userEntity->userEntity.getId())
+                                            .collect(Collectors.toList());
+                                    logger.info("AVX", "got list of dialogs for user "+dialogListIds.size());
+                                    return Flux
+                                            .fromIterable(dialogListIds)
+                                            .flatMap(dialogId -> {
+                                                return reactiveTemplate
+                                                        .changeStream("rxMessage",
+                                                                ChangeStreamOptions
+                                                                        .builder()
+                                                                        .filter(newAggregation(match(where("operationType").is("insert")
+                                                                                .andOperator(where("idDialog").is(dialogId)
+                                                                                        .andOperator(where("isDeleted").is(false)))))
+                                                                        )
+                                                                        .build(),
+                                                                RxMessage.class)
+                                                        .map(ChangeStreamEvent::getBody)
+                                                        .map(msg-> new RxObject(ObjectType.EVENT, EventType.MESSAGE_NEW_FROM_SERVER, null, msg));
+                                            });
+
+                                }
+
+                        )
                 )
                 .map(rxObj ->
                 {

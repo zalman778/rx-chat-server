@@ -76,4 +76,18 @@ public class ChatController {
         }
 
     }
+
+    @RequestMapping(value = "/api/dialog/create", method = RequestMethod.POST, produces = "application/json")
+    public DefaultResponse createDialog(
+              @RequestParam List<String> pickedProfiles
+            , @RequestParam String dialogCaption
+    ) {
+        try {
+            String dialogID = dialogService.createDialog(pickedProfiles, dialogCaption);
+            return new DefaultResponse("ok", "ok", dialogID);
+        } catch (Exception e) {
+            return new DefaultResponse("err", "err on processing request");
+        }
+    }
+
 }

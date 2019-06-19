@@ -8,6 +8,7 @@ import io.reactivex.processors.UnicastProcessor;
 public class SessionObject {
 
     private UnicastProcessor<String> prDialogId = UnicastProcessor.create();
+    private UnicastProcessor<String> upUserId = UnicastProcessor.create();
     private UnicastProcessor<String> prUsername = UnicastProcessor.create();
     private String clientUserName;
 
@@ -23,16 +24,12 @@ public class SessionObject {
         return prUsername;
     }
 
-    public void setPrUsername(UnicastProcessor<String> prUsername) {
-        this.prUsername = prUsername;
-    }
-
     public UnicastProcessor<String> getPrDialogId() {
         return prDialogId;
     }
 
-    public void setPrDialogId(UnicastProcessor<String> prDialogId) {
-        this.prDialogId = prDialogId;
+    public UnicastProcessor<String> getUpUserId() {
+        return upUserId;
     }
 
     @Override

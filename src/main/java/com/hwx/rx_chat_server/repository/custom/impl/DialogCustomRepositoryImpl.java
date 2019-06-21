@@ -49,7 +49,7 @@ public class DialogCustomRepositoryImpl implements DialogCustomRepository {
                 "                             from message ms\n" +
                 "                             where ms.id_dialog = d.id)\n" +
                 "     ) as \"lastMessage\"\n" +
-                "     ,'null' as \"chatImage\"\n" +
+                "     ,d.image_url as \"chatImage\"\n" +
                 "  from dialog d\n" +
                 "\n" +
                 "\n" +

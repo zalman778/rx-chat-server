@@ -31,6 +31,8 @@ public class Dialog implements Serializable {
     @OneToMany(mappedBy = "msgDialog")
     private List<Message> messages = new ArrayList<>();
 
+    private String imageUrl;
+
     private Date createDate;
 
     public String getId() {
@@ -82,6 +84,14 @@ public class Dialog implements Serializable {
         this.messages = messages;
     }
 
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -92,12 +102,13 @@ public class Dialog implements Serializable {
                 Objects.equals(userCreated, dialog.userCreated) &&
                 Objects.equals(members, dialog.members) &&
                 Objects.equals(messages, dialog.messages) &&
+                Objects.equals(imageUrl, dialog.imageUrl) &&
                 Objects.equals(createDate, dialog.createDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, userCreated, members, messages, createDate);
+        return Objects.hash(id, name, userCreated, members, messages, imageUrl, createDate);
     }
 
     @Override
@@ -108,6 +119,7 @@ public class Dialog implements Serializable {
                 ", userCreated=" + userCreated +
                 ", members=" + members +
                 ", messages=" + messages +
+                ", imageUrl='" + imageUrl + '\'' +
                 ", createDate=" + createDate +
                 '}';
     }

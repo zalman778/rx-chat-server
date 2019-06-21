@@ -6,6 +6,7 @@ import com.hwx.rx_chat_server.repository.custom.DialogCustomRepository;
 import com.hwx.rx_chat_server.repository.st.DialogStaticRepository;
 import com.hwx.rx_chat_server.repository.st.UserEntityStaticRepository;
 import com.hwx.rx_chat_server.service.st.DialogService;
+import com.hwx.rx_chat_server.util.ImageUtil;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -13,8 +14,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import java.io.File;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class DialogServiceImpl implements DialogService {
@@ -46,7 +49,22 @@ public class DialogServiceImpl implements DialogService {
 
             UserEntity userEntityA = userEntityStaticRepository.findById(userIdA).get();
             UserEntity userEntityB = userEntityStaticRepository.findById(userIdB).get();
-            newDialog.setName(""+userEntityA.getUsername()+ "; "+userEntityB.getUsername());
+            String dialogName = userEntityA.getUsername()+ "; "+userEntityB.getUsername();
+            newDialog.setName(dialogName);
+
+
+            //generating image of dialog:
+            String imageFileName = UUID.randomUUID().toString()+".png";
+            String uploadRootPath = "/home/hiwoo/projects/git/rx-chat/context-path/upload";
+            File uploadRootDir = new File(uploadRootPath);
+            // Create directory if it not exists.
+            if (!uploadRootDir.exists()) {
+                uploadRootDir.mkdirs();
+            }
+            String imageText = userEntityA.getUsername().substring(0, 2)+". "+userEntityB.getUsername().substring(0, 2);
+            ImageUtil.createImageOfText(imageText,  uploadRootDir.getAbsolutePath() + File.separator + imageFileName, true);
+            newDialog.setImageUrl(imageFileName);
+
             newDialog.getMembers().add(userEntityA);
             newDialog.getMembers().add(userEntityB);
             dialogStaticRepository.save(newDialog);

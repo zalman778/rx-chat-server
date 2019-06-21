@@ -91,7 +91,7 @@ public class UserEntityServiceImpl implements UserEntityService {
 
         //deleting old one if exists:
         if (userEntity.getAvatarUrl() != null && !userEntity.getAvatarUrl().isEmpty()) {
-            String oldFileName = userEntity.getAvatarUrl().replace("api/userdata/profile/image/", "");
+            String oldFileName = userEntity.getAvatarUrl();
             File oldServerFile = new File(uploadRootDir.getAbsolutePath() + File.separator + oldFileName);
 
             if (oldServerFile.exists())
@@ -99,7 +99,7 @@ public class UserEntityServiceImpl implements UserEntityService {
         }
 
         //saving new info:
-        userEntity.setAvatarUrl("api/userdata/profile/image/"+imageFileName);
+        userEntity.setAvatarUrl(imageFileName);
         userEntityStaticRepository.save(userEntity);
         return imageFileName;
     }

@@ -13,15 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import javax.persistence.RollbackException;
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolationException;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 
 @RestController
 public class ProfileController {
@@ -71,7 +65,7 @@ public class ProfileController {
     ) {
         try {
             String imageFileName = userEntityService.updateUserImage(fileData);
-            return new DefaultResponse("ok", "", "api/userdata/profile/image/"+imageFileName);
+            return new DefaultResponse("ok", "", imageFileName);
         } catch (Exception e) {
             logger.error("AVX", e);
             return new DefaultResponse("err", "Error on saving image...");
@@ -92,39 +86,5 @@ public class ProfileController {
     }
 
 
-    @GetMapping("/api/userdata/profile/image/{imageId}")
-    public StreamingResponseBody getProfileImageData(
-              @PathVariable String imageId
-            , HttpServletResponse response
-    ) {
-        try {
 
-//          String uploadRootPath = request.getServletContext().getRealPath("upload");
-            String uploadRootPath = "/home/hiwoo/projects/git/rx-chat/context-path/upload";
-            File uploadRootDir = new File(uploadRootPath);
-
-            File picFile = new File(uploadRootDir.getAbsolutePath() + File.separator + imageId);
-
-
-            if (picFile.exists()) {
-                response.setContentType("application/octet-stream");
-                response.setHeader("Content-Disposition", "attachment; filename=\"" + imageId + "\"");
-
-                InputStream inputStream = new FileInputStream(picFile);
-                return outputStream -> {
-                    int nRead;
-                    byte[] data = new byte[1024];
-                    while ((nRead = inputStream.read(data, 0, data.length)) != -1) {
-                        //System.out.println("Writing some bytes of file...");
-                        outputStream.write(data, 0, nRead);
-                    }
-                };
-            }
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-        return null;
-    }
 }

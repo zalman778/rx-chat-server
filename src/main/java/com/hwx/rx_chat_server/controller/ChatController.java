@@ -1,17 +1,14 @@
 package com.hwx.rx_chat_server.controller;
 
-import com.hwx.rx_chat.common.entity.rx.RxMessage;
-import com.hwx.rx_chat.common.response.DefaultResponse;
-import com.hwx.rx_chat.common.response.DialogResponse;
 import com.hwx.rx_chat.common.response.FriendResponse;
-import com.hwx.rx_chat_server.repository.custom.DialogCustomRepository;
-import com.hwx.rx_chat_server.repository.custom.MessageCustomRepository;
 import com.hwx.rx_chat_server.repository.st.UserEntityStaticRepository;
-import com.hwx.rx_chat_server.service.st.DialogService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,27 +19,7 @@ public class ChatController {
     private static final Logger logger = LoggerFactory.getLogger(ChatController.class);
 
     @Autowired
-    private DialogService dialogService;
-
-    @Autowired
-    private DialogCustomRepository dialogCustomRepository;
-
-    @Autowired
-    private MessageCustomRepository messageCustomRepository;
-
-    @Autowired
     private UserEntityStaticRepository userEntityStaticRepository;
-
-
-    @RequestMapping(value = "/api/dialogs", method = RequestMethod.POST, produces = "application/json")
-    public List<DialogResponse> getDialogList(@RequestParam String userId) {
-        return dialogCustomRepository.findLastDialogs(userId);
-    }
-
-    @RequestMapping(value = "/api/messages", method = RequestMethod.POST, produces = "application/json")
-    public List<RxMessage> getMessagesList(@RequestParam String dialogId) {
-        return messageCustomRepository.findMessageByDialogId(dialogId);
-    }
 
     //поиск юзера по юзернейму -
     // TODO - отфильтровать свой ник, отфильтровать уже существующих друзей
@@ -62,32 +39,6 @@ public class ChatController {
         return tempList;
     }
 
-    //получение id диалога (поиск существующего или новый) по айди 2 юзеров:
-    @GetMapping(value="/api/dialog/find_or_create/{userA}/{userB}")
-    public DefaultResponse findOrCreateDialog(
-              @PathVariable String userA
-            , @PathVariable String userB
-    ) {
-        try {
-            String dialogID = dialogService.findOrCreateDialogIdByUserAAndUserB(userA, userB);
-            return new DefaultResponse("ok", "ok", dialogID);
-        } catch (Exception e) {
-            return new DefaultResponse("err", "err on processing request");
-        }
 
-    }
-
-    @RequestMapping(value = "/api/dialog/create", method = RequestMethod.POST, produces = "application/json")
-    public DefaultResponse createDialog(
-              @RequestParam List<String> pickedProfiles
-            , @RequestParam String dialogCaption
-    ) {
-        try {
-            String dialogID = dialogService.createDialog(pickedProfiles, dialogCaption);
-            return new DefaultResponse("ok", "ok", dialogID);
-        } catch (Exception e) {
-            return new DefaultResponse("err", "err on processing request");
-        }
-    }
 
 }

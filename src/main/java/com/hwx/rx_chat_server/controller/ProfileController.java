@@ -5,6 +5,7 @@ import com.hwx.rx_chat.common.request.ProfileInfoUpdateRequest;
 import com.hwx.rx_chat.common.request.SignupRequest;
 import com.hwx.rx_chat.common.response.DefaultResponse;
 import com.hwx.rx_chat.common.response.UserDetailsResponse;
+import com.hwx.rx_chat_server.repository.custom.UserEntityCustomRepository;
 import com.hwx.rx_chat_server.repository.st.UserEntityStaticRepository;
 import com.hwx.rx_chat_server.service.st.UserEntityService;
 import org.slf4j.Logger;
@@ -26,6 +27,9 @@ public class ProfileController {
 
     @Autowired
     private UserEntityStaticRepository userEntityStaticRepository;
+
+    @Autowired
+    private UserEntityCustomRepository userEntityCustomRepository;
 
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -73,16 +77,9 @@ public class ProfileController {
         }
     }
 
-    @GetMapping("/api/profile/{id}")
-    public UserDetailsResponse getProfileInfo(@PathVariable String id) {
-        UserEntity userEntity = userEntityStaticRepository.findById(id).get();
-        return new UserDetailsResponse(userEntity.getId()
-                , userEntity.getAvatarUrl()
-                , userEntity.getFirstName()
-                , userEntity.getLastName()
-                , userEntity.getUsername()
-                , userEntity.getBio()
-        );
+    @GetMapping("/api/profile/{profileId}")
+    public UserDetailsResponse getProfileInfo(@PathVariable String profileId) {
+        return userEntityCustomRepository.getUserEntityProfileInfo(profileId);
     }
 
 

@@ -1,5 +1,7 @@
 package com.hwx.rx_chat_server.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,15 +16,18 @@ import java.io.InputStream;
 @RestController
 public class ImageController {
 
+    @Autowired
+    private Environment environment;
+
     @GetMapping("/api/image/{imageId}")
     public StreamingResponseBody getProfileImageData(
-            @PathVariable String imageId
+              @PathVariable String imageId
             , HttpServletResponse response
     ) {
         try {
 
 //          String uploadRootPath = request.getServletContext().getRealPath("upload");
-            String uploadRootPath = "/home/hiwoo/projects/git/rx-chat/context-path/upload";
+            String uploadRootPath = environment.getProperty("server.context.upload.path");
             File uploadRootDir = new File(uploadRootPath);
 
             File picFile = new File(uploadRootDir.getAbsolutePath() + File.separator + imageId);

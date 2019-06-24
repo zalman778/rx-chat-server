@@ -3,10 +3,7 @@ package com.hwx.rx_chat.common.entity.st;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Entity
 @Table(name="dialog")
@@ -25,8 +22,9 @@ public class Dialog implements Serializable {
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable (name="dialog_members",
             joinColumns=@JoinColumn (name="dialog_id"),
-            inverseJoinColumns=@JoinColumn(name="user_id"))
-    private List<UserEntity> members = new ArrayList<>();
+            inverseJoinColumns=@JoinColumn(name="user_id")
+            )
+    private Set<UserEntity> members = new HashSet<>();
 
     @OneToMany(mappedBy = "msgDialog")
     private List<Message> messages = new ArrayList<>();
@@ -60,11 +58,11 @@ public class Dialog implements Serializable {
     }
 
 
-    public List<UserEntity> getMembers() {
+    public Set<UserEntity> getMembers() {
         return members;
     }
 
-    public void setMembers(List<UserEntity> members) {
+    public void setMembers(Set<UserEntity> members) {
         this.members = members;
     }
 

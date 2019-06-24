@@ -8,6 +8,7 @@ import com.hwx.rx_chat_server.repository.st.UserEntityStaticRepository;
 import com.hwx.rx_chat_server.service.st.UserEntityService;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,6 +28,9 @@ public class UserEntityServiceImpl implements UserEntityService {
 
     @Autowired
     private UserEntityStaticRepository userEntityStaticRepository;
+
+    @Autowired
+    private Environment environment;
 
     @Override
     public void signUpUser(SignupRequest signupRequest, String passwordHash) {
@@ -56,9 +60,7 @@ public class UserEntityServiceImpl implements UserEntityService {
     @Override
     public String updateUserImage(MultipartFile fileData) throws IOException {
         // Root Directory.
-//        String uploadRootPath = request.getServletContext().getRealPath("upload");
-        String uploadRootPath = "/home/hiwoo/projects/git/rx-chat/context-path/upload";
-
+        String uploadRootPath = environment.getProperty("server.context.upload.path");
 
 
         File uploadRootDir = new File(uploadRootPath);

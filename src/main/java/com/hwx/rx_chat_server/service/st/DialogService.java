@@ -6,4 +6,6 @@ public interface DialogService {
     String findOrCreateDialogIdByUserAAndUserB(String userIdA, String userIdB);
 
     String createDialog(List<String> pickedProfiles, String dialogCaption);
+
+    void deleteDialogMember(String dialogId, String userId);
 }

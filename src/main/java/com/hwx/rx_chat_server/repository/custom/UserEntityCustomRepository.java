@@ -1,6 +1,7 @@
 package com.hwx.rx_chat_server.repository.custom;
 
 import com.hwx.rx_chat.common.entity.st.UserEntity;
+import com.hwx.rx_chat.common.response.UserDetailsResponse;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,4 +15,5 @@ public interface UserEntityCustomRepository {
 
     UserEntity add(UserEntity userEntity);
 
+    UserDetailsResponse getUserEntityProfileInfo(String profileId);
 }

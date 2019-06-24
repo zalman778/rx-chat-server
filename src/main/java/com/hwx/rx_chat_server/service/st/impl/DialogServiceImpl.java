@@ -9,15 +9,14 @@ import com.hwx.rx_chat_server.service.st.DialogService;
 import com.hwx.rx_chat_server.util.ImageUtil;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import java.io.File;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class DialogServiceImpl implements DialogService {
@@ -35,6 +34,8 @@ public class DialogServiceImpl implements DialogService {
     @Autowired
     private EntityManager entityManager;
 
+    @Autowired
+    private Environment environment;
 
     @Override
     @Transactional
@@ -55,7 +56,7 @@ public class DialogServiceImpl implements DialogService {
 
             //generating image of dialog:
             String imageFileName = UUID.randomUUID().toString()+".png";
-            String uploadRootPath = "/home/hiwoo/projects/git/rx-chat/context-path/upload";
+            String uploadRootPath = environment.getProperty("server.context.upload.path");
             File uploadRootDir = new File(uploadRootPath);
             // Create directory if it not exists.
             if (!uploadRootDir.exists()) {
@@ -82,6 +83,21 @@ public class DialogServiceImpl implements DialogService {
         newDialog.setCreateDate(new Date());
         newDialog.setName(dialogCaption);
 
+        //generating short name of dialog:
+        String[] captionArr = dialogCaption.split(" ");
+        StringBuilder sb = new StringBuilder();
+        Arrays.stream(captionArr).forEach(e->sb.append(e, 0, 1));
+
+        String uploadRootPath = environment.getProperty("server.context.upload.path");
+        File uploadRootDir = new File(uploadRootPath);
+        if (!uploadRootDir.exists()) {
+            uploadRootDir.mkdirs();
+        }
+        String imageFileName = UUID.randomUUID().toString()+".png";
+        ImageUtil.createImageOfText(sb.toString(),  uploadRootDir.getAbsolutePath() + File.separator + imageFileName, true);
+        newDialog.setImageUrl(imageFileName);
+
+
         newDialog.setUserCreated(userCreated);
         newDialog.getMembers().add(userCreated);
 
@@ -90,10 +106,15 @@ public class DialogServiceImpl implements DialogService {
             newDialog.getMembers().add(userEntity);
         });
 
-
-
         dialogStaticRepository.save(newDialog);
         return newDialog.getId();
 
+    }
+
+    @Override
+    public void deleteDialogMember(String dialogId, String userId) {
+        Dialog dialog = dialogStaticRepository.findById(dialogId).get();
+        dialog.getMembers().removeIf(userEntity -> userEntity.getId().equals(userId));
+        dialogStaticRepository.save(dialog);
     }
 }

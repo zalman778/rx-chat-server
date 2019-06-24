@@ -15,7 +15,8 @@
 ## Требования
 
 Создать следующие проперти в config/external.properties:
-* spring.datasource.url
+* server.context.upload.path=<путь к upload folder>
+* spring.datasource.url=
 * spring.datasource.username=
 * spring.datasource.password=
 * spring.data.mongodb.host=

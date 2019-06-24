@@ -38,6 +38,8 @@ public class DialogController {
         dialogResponse.setDialogId(dialog.getId());
         dialogResponse.setChatImage(dialog.getImageUrl());
         dialogResponse.setDialogName(dialog.getName());
+        if (dialog.getUserCreated() != null)
+            dialogResponse.setCreatorId(dialog.getUserCreated().getId());
         for (UserEntity user : dialog.getMembers()) {
             FriendResponse friendResponse = new FriendResponse();
             friendResponse.setUserId(user.getId());
@@ -74,5 +76,20 @@ public class DialogController {
         } catch (Exception e) {
             return new DefaultResponse("err", "err on processing request");
         }
+    }
+
+    //удаление пользователя из диалога:
+    @GetMapping(value="/api/dialog/delete_member/{dialogId}/{userId}")
+    public DefaultResponse deleteDialogMember(
+              @PathVariable String dialogId
+            , @PathVariable String userId
+    ) {
+        try {
+            dialogService.deleteDialogMember(dialogId, userId);
+            return new DefaultResponse("ok", "ok");
+        } catch (Exception e) {
+            return new DefaultResponse("err", "err on processing request");
+        }
+
     }
 }

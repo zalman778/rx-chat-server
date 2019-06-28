@@ -25,8 +25,8 @@ public class FriendsController {
 
 
     //весь список друзей пользователя
-    @RequestMapping(value = "/api/friends", method = RequestMethod.POST, produces = "application/json")
-    public List<FriendResponse> getFriendsList(@RequestParam String userId) {
+    @RequestMapping(value = "/api/friends/{userId}", method = RequestMethod.GET, produces = "application/json")
+    public List<FriendResponse> getFriendsList(@PathVariable String userId) {
         List<FriendResponse> tempList = userEntityStaticRepository.findById(userId).get().getFriends()
                 .stream()
                // .map(Friendship::getRequester)

@@ -26,8 +26,8 @@ public class DialogController {
     @Autowired
     private DialogStaticRepository dialogStaticRepository;
 
-    @RequestMapping(value = "/api/dialogs", method = RequestMethod.POST, produces = "application/json")
-    public List<DialogResponse> getDialogList(@RequestParam String userId) {
+    @RequestMapping(value = "/api/dialogs/{userId}", method = RequestMethod.GET, produces = "application/json")
+    public List<DialogResponse> getDialogList(@PathVariable String userId) {
         return dialogCustomRepository.findLastDialogs(userId);
     }
 

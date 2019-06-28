@@ -1,12 +1,10 @@
 package com.hwx.rx_chat_server.controller;
 
-import com.hwx.rx_chat.common.entity.st.UserEntity;
 import com.hwx.rx_chat.common.request.ProfileInfoUpdateRequest;
 import com.hwx.rx_chat.common.request.SignupRequest;
 import com.hwx.rx_chat.common.response.DefaultResponse;
 import com.hwx.rx_chat.common.response.UserDetailsResponse;
 import com.hwx.rx_chat_server.repository.custom.UserEntityCustomRepository;
-import com.hwx.rx_chat_server.repository.st.UserEntityStaticRepository;
 import com.hwx.rx_chat_server.service.st.UserEntityService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,8 +23,6 @@ public class ProfileController {
     @Autowired
     UserEntityService userEntityService;
 
-    @Autowired
-    private UserEntityStaticRepository userEntityStaticRepository;
 
     @Autowired
     private UserEntityCustomRepository userEntityCustomRepository;

@@ -5,9 +5,9 @@ import com.hwx.rx_chat_server.repository.st.UserEntityStaticRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -22,9 +22,8 @@ public class ChatController {
     private UserEntityStaticRepository userEntityStaticRepository;
 
     //поиск юзера по юзернейму -
-    // TODO - отфильтровать свой ник, отфильтровать уже существующих друзей
-    @RequestMapping(value = "/api/users/search", method = RequestMethod.POST, produces = "application/json")
-    public List<FriendResponse> searchUser(@RequestParam String username) {
+    @RequestMapping(value = "/api/users/search/{username}", method = RequestMethod.GET, produces = "application/json")
+    public List<FriendResponse> searchUser(@PathVariable String username) {
         List<FriendResponse> tempList = userEntityStaticRepository.findAllByUsernameLike("%"+username+"%")
                 .stream()
                 .map(e->

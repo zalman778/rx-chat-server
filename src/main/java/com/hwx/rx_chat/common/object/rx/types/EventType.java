@@ -7,5 +7,6 @@ public enum EventType implements Serializable {
     ,MESSAGE_NEW_FROM_SERVER
     ,MESSAGE_DELETED
     ,MESSAGE_EDIT
+    ,FRIEND_SOCKET_INFO
 }
 

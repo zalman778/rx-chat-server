@@ -1,8 +1,10 @@
 package com.hwx.rx_chat_server.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hwx.rx_chat_server.netty.NettySessionsKeeper;
 import com.hwx.rx_chat_server.netty.RSocketObjectController;
 import com.hwx.rx_chat_server.netty.RxObjectHandler;
+import io.netty.channel.epoll.EpollSocketChannel;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.rsocket.*;
@@ -18,7 +20,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.util.ResourceUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.core.publisher.TopicProcessor;
 import reactor.netty.http.server.HttpServer;
 import reactor.netty.tcp.TcpServer;
 
@@ -26,8 +27,8 @@ import javax.net.ssl.SSLException;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.net.InetSocketAddress;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * RSocket endpoint
@@ -45,6 +46,9 @@ public class ChatSocketRxController {
     @Autowired
     RxObjectHandler rxObjectHandler;
 
+    @Autowired
+    NettySessionsKeeper sessionsKeeper;
+
     private final Environment environment;
 
     @Autowired
@@ -54,8 +58,6 @@ public class ChatSocketRxController {
 
     private int PORT = 7878;
 
-    private AtomicLong counter = new AtomicLong();
-    private TopicProcessor processor = TopicProcessor.create();
 
     private Mono<CloseableChannel> closeable = initRSocket();
     {
@@ -93,7 +95,7 @@ public class ChatSocketRxController {
         return RSocketFactory
                 .receive()
 
-                .acceptor((a, b)-> handler(a, b))
+                .acceptor(this::handler)
                 .transport(
                        // TcpServerTransport.create("localhost", PORT)
                         WebsocketServerTransport.create(httpServer)
@@ -104,11 +106,49 @@ public class ChatSocketRxController {
 
 
     private Mono<RSocket> handler(ConnectionSetupPayload a, RSocket b) {
+        InetSocketAddress remoteSocketAddr = null;
+        try {
+            Class objectClass = b.getClass();
+            Field field = objectClass.getDeclaredField("connection");
+            field.setAccessible(true);
+            Object newObj = field.get(b);
+
+            objectClass = newObj.getClass();
+            field = objectClass.getDeclaredField("source");
+            field.setAccessible(true);
+            newObj = field.get(newObj);
+
+            objectClass = newObj.getClass();
+            field = objectClass.getDeclaredField("connection");
+            field.setAccessible(true);
+            newObj = field.get(newObj);
+
+            objectClass = newObj.getClass().getSuperclass().getSuperclass().getSuperclass();
+            field = objectClass.getDeclaredField("connection");
+            field.setAccessible(true);
+            newObj = field.get(newObj);
+
+            objectClass = newObj.getClass();
+            field = objectClass.getDeclaredField("channel");
+            field.setAccessible(true);
+            newObj = field.get(newObj);
+            EpollSocketChannel epollSocketChannel = (EpollSocketChannel) newObj;
+            remoteSocketAddr = epollSocketChannel.remoteAddress();
+
+            System.out.println("got rx request from: "+remoteSocketAddr.toString());
+
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        }
+
+        InetSocketAddress finalRemoteSocketAddr = remoteSocketAddr;
         return Mono.just(new AbstractRSocket() {
 
 
             RSocketObjectController rSocketObjectController = new RSocketObjectController(
-                    mapper, rxObjectHandler
+                    mapper, rxObjectHandler, sessionsKeeper, finalRemoteSocketAddr
             );
 
             //2directional - sending in both ways:

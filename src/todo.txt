@@ -27,4 +27,3 @@ mongod --config /etc/mongod1.conf --port 27018 --dbpath /var/lib/mongodb1 --repl
 
 todo:
 0) add images, bio
-1) add swagger

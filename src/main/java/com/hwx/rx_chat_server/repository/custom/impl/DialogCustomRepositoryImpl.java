@@ -111,7 +111,7 @@ public class DialogCustomRepositoryImpl implements DialogCustomRepository {
                     "    )");
             query.setParameter("userA", userIdA);
             query.setParameter("userB", userIdB);
-            return (String) query.getSingleResult();
+            return  (String) query.getResultList().get(0);
         } catch (NoResultException nre) {
             return null;
         }

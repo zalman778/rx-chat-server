@@ -18,6 +18,10 @@ public class RxEvent implements Serializable {
     @JsonProperty("user_to")
     private String userTo;
 
+    @SerializedName("user_to_id")
+    @JsonProperty("user_to_id")
+    private String userToId;
+
     @SerializedName("event_type")
     @JsonProperty("event_type")
     private EventType eventType;
@@ -40,8 +44,9 @@ public class RxEvent implements Serializable {
     }
 
 
-    public RxEvent(String userTo, EventType eventType, String objectId, String value, Date dateExpiring) {
+    public RxEvent(String userTo, String userToId, EventType eventType, String objectId, String value, Date dateExpiring) {
         this.userTo = userTo;
+        this.userToId = userToId;
         this.eventType = eventType;
         this.objectId = objectId;
         this.value = value;
@@ -54,6 +59,14 @@ public class RxEvent implements Serializable {
 
     public void setUserTo(String userTo) {
         this.userTo = userTo;
+    }
+
+    public String getUserToId() {
+        return userToId;
+    }
+
+    public void setUserToId(String userToId) {
+        this.userToId = userToId;
     }
 
     public EventType getEventType() {
@@ -98,6 +111,7 @@ public class RxEvent implements Serializable {
         if (o == null || getClass() != o.getClass()) return false;
         RxEvent rxEvent = (RxEvent) o;
         return Objects.equals(userTo, rxEvent.userTo) &&
+                Objects.equals(userToId, rxEvent.userToId) &&
                 eventType == rxEvent.eventType &&
                 Objects.equals(objectId, rxEvent.objectId) &&
                 Objects.equals(value, rxEvent.value) &&
@@ -106,13 +120,14 @@ public class RxEvent implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(userTo, eventType, objectId, value, dateExpiring);
+        return Objects.hash(userTo, userToId, eventType, objectId, value, dateExpiring);
     }
 
     @Override
     public String toString() {
         return "RxEvent{" +
                 "userTo='" + userTo + '\'' +
+                ", userToId='" + userToId + '\'' +
                 ", eventType=" + eventType +
                 ", objectId='" + objectId + '\'' +
                 ", value='" + value + '\'' +

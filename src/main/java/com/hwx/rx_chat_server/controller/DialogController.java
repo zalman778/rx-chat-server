@@ -38,8 +38,10 @@ public class DialogController {
         dialogResponse.setDialogId(dialog.getId());
         dialogResponse.setChatImage(dialog.getImageUrl());
         dialogResponse.setDialogName(dialog.getName());
-        if (dialog.getUserCreated() != null)
+        if (dialog.getUserCreated() != null) {
             dialogResponse.setCreatorId(dialog.getUserCreated().getId());
+            dialogResponse.setCreatorUsername(dialog.getUserCreated().getUsername());
+        }
         for (UserEntity user : dialog.getMembers()) {
             FriendResponse friendResponse = new FriendResponse();
             friendResponse.setUserId(user.getId());

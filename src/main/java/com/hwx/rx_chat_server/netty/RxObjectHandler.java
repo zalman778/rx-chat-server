@@ -80,8 +80,18 @@ public class RxObjectHandler {
     //обработка объектов от клента, сеттим настройки, пишем в базу и все такое
     public void handleObject(RxObject rxObject, String clientId) {
         SessionObject sessionObject = sessionsKeeper.getObject(clientId);
-        logger.info("AVX", "got rx object:"+rxObject.getObjectType().toString()+" for clientId="+clientId);
+        System.out.println("got rx object:"+rxObject.getObjectType().toString()+" for clientId="+clientId);
         switch (rxObject.getObjectType()) {
+            //запрос айпи для п2п чата, сделать проверку на друг - не друг
+            case REQUEST_IP:
+                String profileId = (String) rxObject.getValue();
+                SessionObject profileObject = sessionsKeeper.getSessionObjectByUserId(profileId);
+                if (profileObject != null) {
+                    String userSocketInfo = profileObject.getUserIp()+":"+profileObject.getUserPort();
+                    System.out.println("sent userSocketInfo: "+userSocketInfo);
+                    sessionObject.getUpRequestedUserSocketInfo().onNext(userSocketInfo);
+                }
+
             case EVENT:
                 switch (rxObject.getEventType()) {
                     case MESSAGE_NEW_FROM_CLIENT: {
@@ -127,7 +137,9 @@ public class RxObjectHandler {
                             for (UserEntity userEntity : message.getMsgDialog().getMembers()) {
 
                                 //expiring in 1 hr
-                                RxEvent rxEvent = new RxEvent(userEntity.getUsername()
+                                RxEvent rxEvent = new RxEvent(
+                                          userEntity.getUsername()
+                                        , userEntity.getId()
                                         , EventType.MESSAGE_DELETED
                                         , messageId
                                         ,null
@@ -162,7 +174,9 @@ public class RxObjectHandler {
                         for (UserEntity userEntity : message.getMsgDialog().getMembers()) {
 
                             //expiring in 1 hr
-                            RxEvent rxEvent = new RxEvent(userEntity.getUsername()
+                            RxEvent rxEvent = new RxEvent(
+                                      userEntity.getUsername()
+                                    , userEntity.getId()
                                     , EventType.MESSAGE_EDIT
                                     , messageId
                                     , message.getValue()
@@ -178,18 +192,25 @@ public class RxObjectHandler {
             //прилетают настройки от клиента:
             case SETTING:
                 switch (rxObject.getSettingType()) {
-                    case ID_DIALOG:
-                        sessionObject.getPrDialogId().onNext((String)rxObject.getValue());
-                        logger.info("AVX", "got dialogid for client ="+ rxObject.getValue());
+                    case ID_DIALOG_FOR_CONVERSATION:
+                        sessionObject.getUpDialogId().onNext((String)rxObject.getValue());
+                       // logger.info("AVX", "got dialogid for client ="+ rxObject.getValue());
+                        System.out.println("got dialogid for clientId ="+clientId+"; userId="+ rxObject.getValue());
                         break;
-                    case ID_USER:
-                        sessionObject.getUpUserId().onNext((String)rxObject.getValue());
-                        logger.info("AVX", "got dialogid for client ="+ rxObject.getValue());
+                    case ID_USER_FOR_EVENT:
+                        sessionObject.getUpUserIdForEvents().onNext((String)rxObject.getValue());
+                        System.out.println("got userIdForEvent forclientId ="+clientId+"; userId="+ rxObject.getValue());
                         break;
-                    case USERNAME:
-                        sessionObject.getPrUsername().onNext((String)rxObject.getValue());
-                        sessionObject.setClientUserName((String)rxObject.getValue());
-                        logger.info("AVX", "got username from client ="+sessionObject.getClientUserName());
+                    case ID_USER_FOR_CONVERSATION:
+                        sessionObject.getUpUserIdForConversation().onNext((String)rxObject.getValue());
+                        System.out.println("got userIdForConversation for clientId ="+clientId+"; userId="+ rxObject.getValue());
+                        break;
+                    case ID_USER_FOR_BACKGROUND:
+                        String userId = (String)rxObject.getValue();
+                        sessionsKeeper.removeSessionsWithUserId(userId);
+                        sessionObject.getUpUserIdForBackground().onNext(userId);
+                        sessionObject.setUserId(userId);
+                        System.out.println("got userIdForBackground for clientId ="+clientId+"; userId="+ rxObject.getValue());
                         break;
                 }
                 break;
@@ -203,7 +224,7 @@ public class RxObjectHandler {
     public Flux<Payload> getObjectFlux(String clientId) {
         SessionObject sessionObject = sessionsKeeper.getObject(clientId);
         return Flux.merge( //mergeSequential
-                  Flux.from(sessionObject.getPrDialogId())
+                  Flux.from(sessionObject.getUpDialogId())
                     .flatMap(e->{
                             logger.info("AVX", "requesting for userId="+e);
                             return reactiveTemplate
@@ -222,15 +243,15 @@ public class RxObjectHandler {
 
                     ),
                    ///подписываемся на события по логину ?!
-                   Flux.from(sessionObject.getPrUsername())
+                   Flux.from(sessionObject.getUpUserIdForEvents())
                         .flatMap(e-> {
-                            logger.info("AVX", "got username"+e);
+                            logger.info("AVX", "got userId="+e);
                             return reactiveTemplate
                                     .changeStream("rxEvent",
                                             ChangeStreamOptions
                                                     .builder()
                                                     .filter(newAggregation(match(where("operationType").is("insert")
-                                                        .andOperator(where("userTo").is(e))
+                                                        .andOperator(where("userToId").is(e))
                                                     )))
                                                     .build(),
                                             RxEvent.class)
@@ -239,13 +260,18 @@ public class RxObjectHandler {
                         }
 
                     )
+                    /* подписываемся на запросы айпишников для п2п чата:
+
+                     */
+                    ,Flux.from(sessionObject.getUpRequestedUserSocketInfo())
+                        .map(socketInfo->new RxObject(ObjectType.EVENT, EventType.FRIEND_SOCKET_INFO, (Object) socketInfo, (String) null))
                     /* подписываемся на все сообщения для юзера
                      * при получении нового юзер айди - получаем из статик бд весь список диалогов, в котором он учавствует:
                      * надо предусмотреть случаи, когда юзера удаляют из чаата или добавляют в него - получаем рхИвенты,
                      * их надо анализировать тут же
                      */
 
-                    ,Flux.from(sessionObject.getUpUserId())
+                    ,Flux.from(sessionObject.getUpUserIdForConversation())
                         .flatMap(e->{
                                     logger.info("AVX", "requesting for userId="+e);
                                     List<String> dialogListIds = dialogStaticRepository
@@ -255,20 +281,18 @@ public class RxObjectHandler {
                                     logger.info("AVX", "got list of dialogs for user "+dialogListIds.size());
                                     return Flux
                                             .fromIterable(dialogListIds)
-                                            .flatMap(dialogId -> {
-                                                return reactiveTemplate
-                                                        .changeStream("rxMessage",
-                                                                ChangeStreamOptions
-                                                                        .builder()
-                                                                        .filter(newAggregation(match(where("operationType").is("insert")
-                                                                                .andOperator(where("idDialog").is(dialogId)
-                                                                                        .andOperator(where("isDeleted").is(false)))))
-                                                                        )
-                                                                        .build(),
-                                                                RxMessage.class)
-                                                        .map(ChangeStreamEvent::getBody)
-                                                        .map(msg-> new RxObject(ObjectType.EVENT, EventType.MESSAGE_NEW_FROM_SERVER, null, msg));
-                                            });
+                                            .flatMap(dialogId -> reactiveTemplate
+                                                    .changeStream("rxMessage",
+                                                            ChangeStreamOptions
+                                                                    .builder()
+                                                                    .filter(newAggregation(match(where("operationType").is("insert")
+                                                                            .andOperator(where("idDialog").is(dialogId)
+                                                                                    .andOperator(where("isDeleted").is(false)))))
+                                                                    )
+                                                                    .build(),
+                                                            RxMessage.class)
+                                                    .map(ChangeStreamEvent::getBody)
+                                                    .map(msg-> new RxObject(ObjectType.EVENT, EventType.MESSAGE_NEW_FROM_SERVER, null, msg)));
 
                                 }
 

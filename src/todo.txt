@@ -23,6 +23,8 @@ mongod --config /etc/mongod.conf --port 27017 --dbpath /var/lib/mongodb --replSe
 mongod --config /etc/mongod1.conf --port 27018 --dbpath /var/lib/mongodb1 --replSet "rs0" &
 
 
+rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}, {"_id":2, "host":"localhost:27018"}]})
+
 5.             <!--android:visibility="@={conversationViewModel.lvEditMessageVisibility}"-->
 
 todo:

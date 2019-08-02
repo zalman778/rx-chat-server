@@ -82,7 +82,7 @@ public class RxObjectHandler {
         SessionObject sessionObject = sessionsKeeper.getObject(clientId);
         System.out.println("got rx object:"+rxObject.getObjectType().toString()+" for clientId="+clientId);
         switch (rxObject.getObjectType()) {
-            //запрос айпи для п2п чата, сделать проверку на друг - не друг
+            //TODO: warn! запрос айпи для п2п чата, сделать проверку на друг - не друг
             case REQUEST_IP:
                 String profileId = (String) rxObject.getValue();
                 SessionObject profileObject = sessionsKeeper.getSessionObjectByUserId(profileId);
@@ -101,7 +101,7 @@ public class RxObjectHandler {
 
 
                             //adding image URL in rx messages:
-                            //TODO: implement caching!!!
+                            //TODO: warn implement caching!!!
                             UserEntity userSended = userEntityStaticRepository.findFirstByUsername(rxMessage.getUserFromName());
                             if (userSended != null)
                                 rxMessage.setImageUrl(userSended.getAvatarUrl());

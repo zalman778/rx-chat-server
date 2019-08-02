@@ -1,4 +1,4 @@
-package com.hwx.rx_chat_server.rsocket.test_a;
+package com.hwx.rx_chat_server.rsocket;
 
 import io.reactivex.processors.PublishProcessor;
 import io.rsocket.Payload;
@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.time.Duration;
 import java.util.Scanner;
 
-public class RClient {
+public class RClientTest {
 
     private static PublishProcessor<Payload> publishProcessor = PublishProcessor.create();
 
@@ -24,7 +24,7 @@ public class RClient {
 
         TcpClient tcpClient = TcpClient.create()
                 .host("127.0.0.1")
-                .port(RServer.PORT);
+                .port(RServerTest.PORT);
 
         HttpClient httpClient = HttpClient.from(tcpClient);
 

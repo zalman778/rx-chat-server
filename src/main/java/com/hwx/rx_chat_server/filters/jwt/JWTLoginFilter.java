@@ -37,7 +37,7 @@ public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
         String username = request.getParameter("username");
         String password = request.getParameter("passwordHash");
 
-        System.out.printf("JWTLoginFilter.attemptAuthentication: username/password= %s,%s", username, password);
+        System.out.printf("JWTLoginFilter.attemptAuthentication: username/password= %s,%s\n", username, password);
 
 
         return getAuthenticationManager()

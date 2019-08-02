@@ -1,4 +1,4 @@
-package com.hwx.rx_chat_server.rsocket.test_a;
+package com.hwx.rx_chat_server.rsocket;
 
 import io.rsocket.AbstractRSocket;
 import io.rsocket.Payload;
@@ -12,7 +12,7 @@ import reactor.core.publisher.Mono;
 import java.io.IOException;
 import java.time.Duration;
 
-public class RServer {
+public class RServerTest {
 
     public static final int PORT = 7777;
 

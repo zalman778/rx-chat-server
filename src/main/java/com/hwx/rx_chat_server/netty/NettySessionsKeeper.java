@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 
 import java.net.InetSocketAddress;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 /*
@@ -38,10 +39,12 @@ public class NettySessionsKeeper {
 
     //очищаем все старые сессии этого клиента
     public void removeSessionsWithUserId(String userId) {
-        for (Map.Entry<String, SessionObject> entry : objectMap.entrySet()) {
-            if (entry.getValue().getUserId() != null && entry.getValue().getUserId().equals(userId)) {
-                objectMap.remove(entry.getKey());
-            }
-        }
+        objectMap.entrySet()
+                .removeIf(entry -> entry.getValue().getUserId() != null && entry.getValue().getUserId().equals(userId));
+
+    }
+
+    public void cleanSessions() {
+        objectMap.clear();
     }
 }

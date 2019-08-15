@@ -1,5 +1,6 @@
 package com.hwx.rx_chat_server.netty;
 
+import com.hwx.rx_chat_server.netty.misc.WrapperSocketIpAndProfileId;
 import io.reactivex.processors.UnicastProcessor;
 
 /**
@@ -14,7 +15,7 @@ public class SessionObject {
     private UnicastProcessor<String> upUserIdForBackground = UnicastProcessor.create();
 
     //запрос на получение айпи, если друг, сделать проверку!!
-    private UnicastProcessor<String> upRequestedUserSocketInfo = UnicastProcessor.create();
+    private UnicastProcessor<WrapperSocketIpAndProfileId> upRequestedUserSocketInfo = UnicastProcessor.create();
 
     private UnicastProcessor<String> upUsername = UnicastProcessor.create();
     private String clientUserName; //TODO - switch logic to userId
@@ -76,7 +77,7 @@ public class SessionObject {
         return upUserIdForBackground;
     }
 
-    public UnicastProcessor<String> getUpRequestedUserSocketInfo() {
+    public UnicastProcessor<WrapperSocketIpAndProfileId> getUpRequestedUserSocketInfo() {
         return upRequestedUserSocketInfo;
     }
 

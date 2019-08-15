@@ -11,6 +11,7 @@ import com.hwx.rx_chat.common.entity.st.Dialog;
 import com.hwx.rx_chat.common.entity.st.Message;
 import com.hwx.rx_chat.common.entity.st.UserEntity;
 import com.hwx.rx_chat.common.util.DateUtil;
+import com.hwx.rx_chat_server.netty.misc.WrapperSocketIpAndProfileId;
 import com.hwx.rx_chat_server.repository.custom.DialogCustomRepository;
 import com.hwx.rx_chat_server.repository.custom.MessageCustomRepository;
 import com.hwx.rx_chat_server.repository.st.DialogStaticRepository;
@@ -87,9 +88,11 @@ public class RxObjectHandler {
                 String profileId = (String) rxObject.getValue();
                 SessionObject profileObject = sessionsKeeper.getSessionObjectByUserId(profileId);
                 if (profileObject != null) {
-                    String userSocketInfo = profileObject.getUserIp()+":"+profileObject.getUserPort();
+                    //String userSocketInfo = profileObject.getUserIp()+":"+profileObject.getUserPort();
+                    String userSocketInfo = profileObject.getUserIp();
                     System.out.println("sent userSocketInfo: "+userSocketInfo);
-                    sessionObject.getUpRequestedUserSocketInfo().onNext(userSocketInfo);
+                    WrapperSocketIpAndProfileId wrapperSocketIpAndProfileId = new WrapperSocketIpAndProfileId(userSocketInfo, profileId);
+                    sessionObject.getUpRequestedUserSocketInfo().onNext(wrapperSocketIpAndProfileId);
                 }
 
             case EVENT:
@@ -106,7 +109,8 @@ public class RxObjectHandler {
                             if (userSended != null)
                                 rxMessage.setImageUrl(userSended.getAvatarUrl());
 
-                            rxMessage.setUserFromName(sessionObject.getClientUserName());
+                            if (rxMessage.getUserFromName() == null)
+                                rxMessage.setUserFromName(sessionObject.getClientUserName());
 
                             messageReactiveRepository.save(rxMessage).subscribe();
 
@@ -242,7 +246,7 @@ public class RxObjectHandler {
                             }
 
                     ),
-                   ///подписываемся на события по логину ?!
+                   ///подписываемся на события по idUser ?!
                    Flux.from(sessionObject.getUpUserIdForEvents())
                         .flatMap(e-> {
                             logger.info("AVX", "got userId="+e);
@@ -264,7 +268,12 @@ public class RxObjectHandler {
 
                      */
                     ,Flux.from(sessionObject.getUpRequestedUserSocketInfo())
-                        .map(socketInfo->new RxObject(ObjectType.EVENT, EventType.FRIEND_SOCKET_INFO, (Object) socketInfo, (String) null))
+                        .map(socketInfo->
+                                new RxObject(ObjectType.EVENT, EventType.FRIEND_SOCKET_INFO,
+                                        socketInfo.getSocketIp(),
+                                        socketInfo.getProfileId()
+                                )
+                        )
                     /* подписываемся на все сообщения для юзера
                      * при получении нового юзер айди - получаем из статик бд весь список диалогов, в котором он учавствует:
                      * надо предусмотреть случаи, когда юзера удаляют из чаата или добавляют в него - получаем рхИвенты,

@@ -63,8 +63,10 @@ public class ChatSocketRxController {
     {
         closeable.subscribe(e->{
             logger.info("AVX", e.toString());
+            System.out.println(e.toString());
         },e->{
             logger.error("AVX", e);
+            System.out.println(e.getMessage());
         });
     }
 

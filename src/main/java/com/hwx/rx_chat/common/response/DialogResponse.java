@@ -33,6 +33,10 @@ public class DialogResponse implements Serializable {
     @JsonProperty("chat_image")
     private String chatImage;
 
+    @SerializedName("is_private")
+    @JsonProperty("is_private")
+    private boolean isPrivate;
+
     public String getDialogId() {
         return dialogId;
     }
@@ -83,12 +87,21 @@ public class DialogResponse implements Serializable {
         this.chatImage = chatImage;
     }
 
+    public boolean isPrivate() {
+        return isPrivate;
+    }
+
+    public void setPrivate(boolean aPrivate) {
+        isPrivate = aPrivate;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         DialogResponse that = (DialogResponse) o;
-        return Objects.equals(dialogId, that.dialogId) &&
+        return isPrivate == that.isPrivate &&
+                Objects.equals(dialogId, that.dialogId) &&
                 Objects.equals(dialogName, that.dialogName) &&
                 Objects.equals(lastDate, that.lastDate) &&
                 Objects.equals(lastUser, that.lastUser) &&
@@ -98,7 +111,7 @@ public class DialogResponse implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(dialogId, dialogName, lastDate, lastUser, lastMessage, chatImage);
+        return Objects.hash(dialogId, dialogName, lastDate, lastUser, lastMessage, chatImage, isPrivate);
     }
 
     @Override
@@ -110,6 +123,7 @@ public class DialogResponse implements Serializable {
                 ", lastUser='" + lastUser + '\'' +
                 ", lastMessage='" + lastMessage + '\'' +
                 ", chatImage='" + chatImage + '\'' +
+                ", isPrivate=" + isPrivate +
                 '}';
     }
 }
